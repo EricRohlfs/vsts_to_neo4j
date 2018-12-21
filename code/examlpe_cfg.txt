@@ -1,0 +1,13 @@
+#rename to default.cfg
+[DEFAULT]
+neo4j_user =neo4j
+neo4j_password =yourpassword
+neo4j_url = localhost:7474
+# Most of these values are loaded by the VSTSInfo.py file.
+personal_access_token =abcdefjhijklmnopqrstuvwxyz
+#comma separated list of vsts project names 
+project_whitelist =  Oystertoad,FortifyCompare,UltrasonicStriker
+# mycompany.visualstudio.com
+vsts_instance_base =lazyrobots.visualstudio.com
+cache_folder =../../../vsts_to_neo4j_cache
+cache_file_prefix=lazy
