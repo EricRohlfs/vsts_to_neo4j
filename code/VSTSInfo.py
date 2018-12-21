@@ -19,7 +19,7 @@ class VstsInfo(object):
         self.config = configparser.ConfigParser()
         self.config.read_file(open('default.cfg'))
 
-        #todo: get these items out of this class, 
+        #todo: get these items out of this class,
         #      let each module build their own url with help from this class.
         self.project_name = project_name
         self._load_from_source = False

@@ -13,6 +13,8 @@ Do not check in your config file.  The .gitignore file is set to ignore .cfg fil
 
 Download and install Neo4J
 
+Install apoc into Neo4J. (Download and the apoc jar file in the plugins folder of Neo4J. If the plugins folder does not exist, just create it in the root of your database folder eg: logs, plugins, schema)
+
 ## Make default.cfg
 
 In the code folder, rename the default_cfg.txt file to default.cfg and change the values.
@@ -24,10 +26,16 @@ pip install py2neo
 ## Run the Scripts
 
 python ProjectsTeamsUsers.py
+
 python Repositories.py
+
 python PullRequests.py
+
 python Comments.py
+
 python WorkItems.py
+
 python WorkItemLinks.py
+
 python PostProcessingCmds.py
 

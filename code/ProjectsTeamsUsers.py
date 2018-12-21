@@ -53,7 +53,7 @@ class ProjectsTeamsUsersWorker(object):
         url = self.get_vsts_team_membership_url(project.Id, team.Id)
         print("Users Url:")
         print(url)
-        users = self.vsts.get_data(url)
+        users = self.vsts.make_request(url)
 
         for item in users["value"]:
             #we don't want system users
@@ -79,7 +79,7 @@ class ProjectsTeamsUsersWorker(object):
         """
         url = self.get_vsts_teams_url(project.Id)
         print(url)
-        teams = self.vsts.get_data(url)
+        teams = self.vsts.make_request(url)
 
         for item in teams["value"]:
             team = Team()
@@ -143,7 +143,7 @@ if __name__ == '__main__':
     #tod clean up this signature mess and just pass in VSTS
     WORKER = ProjectsTeamsUsersWorker(VSTS.get_request_settings(), VSTS.project_whitelist, VSTS)
     PROJECTS_URL = WORKER.get_vsts_projects_url()
-    RAW = WORKER.vsts.get_data(PROJECTS_URL)
+    RAW = WORKER.vsts.make_request(PROJECTS_URL)
     PROJECTS = RAW["value"]
 
     if RUN_MULTITHREADED:
