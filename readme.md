@@ -74,3 +74,14 @@ List of developers who reviewed pull requests since 2018 (by project)
   WHERE n.CreatedTimestamp > 1514764800000
   RETURN distinct d.Name
 ```
+
+Count of Comments by User for the past 365 days
+
+```
+  WITH apoc.date.add(timestamp(),"ms", -365, 'd') as PastDate
+  Match (u:Person)
+  Optional Match (u)-[:AUTHOR]-(c:Comment)
+  WHERE c.PublishedTimestamp >= PastDate
+  RETURN count(c) as numberOfComments, u.Name as CodeReviewer
+  ORDER BY numberOfComments
+```
