@@ -25,6 +25,10 @@ class VstsInfo(object):
         self._load_from_source = False
 
     @property
+    def crawl_throttle(self):
+        return float(self.config['DEFAULT']['crawl_throttle'])
+
+    @property
     def project_whitelist(self):
         """
         List the projects you wish to crawl
@@ -130,34 +134,32 @@ class VstsInfo(object):
         request_info["headers"] = self.get_request_headers()
         return request_info
 
-    def make_request(self, url, sleep_time=1, write_to_file=True):
+    def make_request(self, url, write_to_file=True):
         '''
         Make the VSTS call or gets data from cache, then convert results to a dictionary.
-        :parama: float sleep_time:
-            we don't want to beat the sever up so we want to space out requests
         '''
         print(url)
         file_name = self.build_file_name(url)
         data = {}
         if self._load_from_source:
-            data = self.get_data_from_vsts(url, sleep_time)
+            data = self.get_data_from_vsts(url, self.crawl_throttle)
         else:
             data = self.get_data_from_file(file_name)
 
         #if we loaded from source and data is none hitting again does nothing
         if (data is None) and (not self._load_from_source):
             print("     Source: VSTS")
-            data = self.get_data_from_vsts(url, sleep_time)
+            data = self.get_data_from_vsts(url, self.crawl_throttle)
             #only write to file if we get data from vsts
             if write_to_file:
                 self.write_data(url, data)
         return data
 
-    def get_data_from_vsts(self, url, sleep_time):
+    def get_data_from_vsts(self, url, throttle):
         """
         gets data from vsts using provided url
         """
-        time.sleep(sleep_time)
+        time.sleep(throttle)
         request = urllib.request.Request(url, headers=self.get_request_headers())
         opener = urllib.request.build_opener()
         response = opener.open(request)
