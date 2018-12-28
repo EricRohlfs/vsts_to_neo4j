@@ -85,3 +85,12 @@ Count of Comments by User for the past 365 days
   RETURN count(c) as numberOfComments, u.Name as CodeReviewer
   ORDER BY numberOfComments
 ```
+
+Dump all comments made over the past year
+```
+  WITH apoc.date.add(timestamp(),"ms", -365, 'd') as PastDate
+  Match (u:Developer)
+  Optional Match (u)-[:AUTHOR]-(c:Comment)
+  WHERE c.PublishedTimestamp >= PastDate
+  RETURN u.Name as CodeReviewer, c.Id, c.Content, c.PublishedTimestamp as PTimestamp
+```
