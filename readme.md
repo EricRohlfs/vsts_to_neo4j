@@ -68,6 +68,15 @@ List of developers who created a pull request since 2018 (by project)
   RETURN distinct d.Name
 ```
 
+List of developers who created a pull request since 2018 (all projects)
+```
+  Match (dev:Developer)
+  Optional Match(dev)-[:CREATED_BY]-(pr:PullRequest)-[]-(r:Repository)-[]-(t:Project)
+  WHERE pr.CreatedTimestamp > 1514764800000
+  RETURN count(pr) as pullRequestsCreated, dev.Name, t.Name as ProjectName
+  order by dev.Name, pullRequestsCreated
+```
+
 List of developers who reviewed pull requests since 2018 (by project)
 ```
   MATCH (d:Person)-[r3:REVIEWED_BY]-(n:PullRequest)-[r1]-(repo:Repository)-[r2]-(p:Project{Name:'Oystertoad'})
