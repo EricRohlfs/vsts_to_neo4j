@@ -36,7 +36,11 @@ pip install py2neo
 ## Few Queries
 
 Note: Must run the post processing commands first to create the CreatedTimestamp fields.
-1514764800000 is Jan 1st 2018
+
+Note: 1514764800000 is Jan 1st 2018
+
+
+Total Count of Pull Requests Created this year
 
 ```
   MATCH (n:PullRequest)
@@ -44,3 +48,10 @@ Note: Must run the post processing commands first to create the CreatedTimestamp
   RETURN count(n)
 ```
 
+Total Count of Pull Requests by Project since 2018
+
+```
+  MATCH (n:PullRequest)-[r1]-(repo:Repository)-[r2]-(p:Project{Name:'Oystertoad'})
+  WHERE n.CreatedTimestamp > 1514764800000
+  RETURN count(n)
+```
