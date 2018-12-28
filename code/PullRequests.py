@@ -258,7 +258,7 @@ class PullRequestsWorker(object):
 if __name__ == '__main__':
     print("starting PullRequests")
     #set to false for easier debugging, but it is slower
-    RUN_MULTITHREADED = False
+    RUN_MULTITHREADED = True
 
     GRAPH = GraphBuilder()
     GRAPH.create_unique_constraints()
