@@ -9,9 +9,7 @@ from models import GraphBuilder, Project, WorkItem, Person, PullRequest
 class PullReqeustWorkItemsWorker(object):
     """
     Gets work items linked to pull requests and saves them to Neo4j
-    :param: int space_out_requests:
-        time to wait between http calls so we don't max out the server
-
+    :todo when reading from the cached requests, check work items that are not closed or resloved, would be nice to have the option to crawl them again to see if there were updates.
     :todo $expand=relations will get the relations so we can link them up
     """
 
@@ -70,6 +68,8 @@ class PullReqeustWorkItemsWorker(object):
         """
         Names have email addresses in them like: John Doe <john_doe@example.com>
         """
+        if isinstance(name, dict):
+            name = name['displayName']
         name = name.split(" <")[0]
         return name
 
@@ -223,14 +223,14 @@ class PullReqeustWorkItemsWorker(object):
 if __name__ == '__main__':
     print("starting Work Items linked to Pull Requests")
     #set to false for easier debugging, but it is slower
-    RUN_MULTITHREADED = True
+    RUN_MULTITHREADED = False
 
-    VSTS = VstsInfo(None, None)
+    VSTS = VstsInfo(None, None, ignore_cache=False)
     WORKER = PullReqeustWorkItemsWorker(VSTS.get_request_settings(), VSTS)
-
     if RUN_MULTITHREADED:
         with Pool(5) as p:
             p.map(WORKER.add_pull_request_work_items, VSTS.project_whitelist)
     else:
         for proj_name in VSTS.project_whitelist:
+
             WORKER.add_pull_request_work_items(proj_name)

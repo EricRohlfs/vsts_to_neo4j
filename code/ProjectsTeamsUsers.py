@@ -131,14 +131,14 @@ class ProjectsTeamsUsersWorker(object):
         print("Finished Adding Projects Teams and Users")
 
 if __name__ == '__main__':
-    print("starting PullRequests")
+    print("starting Projects Teams and Users")
     #set to false for easier debugging, but it is slower
     RUN_MULTITHREADED = True
 
     GRAPH = GraphBuilder()
     GRAPH.create_unique_constraints()
 
-    VSTS = VstsInfo(None, None)
+    VSTS = VstsInfo(None, None, ignore_cache=True)
 
     #tod clean up this signature mess and just pass in VSTS
     WORKER = ProjectsTeamsUsersWorker(VSTS.get_request_settings(), VSTS.project_whitelist, VSTS)

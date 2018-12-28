@@ -59,14 +59,15 @@ class RepositoriesWorker(object):
 
 
 if __name__ == '__main__':
-    print("starting PullRequests")
+    print("starting Repositories Crawl")
     #set to false for easier debugging, but it is slower
     run_multithreaded = True
 
     GRAPH = GraphBuilder()
     GRAPH.create_unique_constraints()
 
-    VSTS = VstsInfo(None, None)
+    #If you feel your cache is up to date, then set ignore_cache to False.
+    VSTS = VstsInfo(None, None, ignore_cache=True)
     PULL_REQUEST_STATUS = "Completed"
     WORKER = RepositoriesWorker(VSTS.get_request_settings(), VSTS)
 

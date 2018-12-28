@@ -67,7 +67,7 @@ class PullRequestsWorker(object):
             while True:
                 url = self.get_vsts_pull_request_url(project_name, repo_id, skip)
                 raw_pulls = self.vsts.make_request(url)
-                if not self.has_data_to_parse:
+                if not self.has_data_to_parse(raw_pulls):
                     break
                 skip = skip + self.num_per_request #increment pagination for vsts api call
                 for raw_pull_req in raw_pulls["value"]:

@@ -14,7 +14,7 @@ class VstsInfo(object):
     and saves results to file before passing off for processing.
     """
 
-    def __init__(self, personal_access_token, project_name, data_folder='../DevMrgDataCache'):
+    def __init__(self, personal_access_token, project_name, data_folder='../DevMrgDataCache', ignore_cache=False):
         # todo: remove personal access token from the __init__ signature
         self.config = configparser.ConfigParser()
         self.config.read_file(open('default.cfg'))
@@ -22,7 +22,7 @@ class VstsInfo(object):
         #todo: get these items out of this class,
         #      let each module build their own url with help from this class.
         self.project_name = project_name
-        self._load_from_source = False
+        self._load_from_source = ignore_cache
 
     @property
     def crawl_throttle(self):
