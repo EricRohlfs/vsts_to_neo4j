@@ -41,7 +41,6 @@ Note: 1514764800000 is Jan 1st 2018
 
 
 Total Count of Pull Requests Created this year
-
 ```
   MATCH (n:PullRequest)
   WHERE n.CreatedTimestamp > 1514764800000
@@ -49,9 +48,58 @@ Total Count of Pull Requests Created this year
 ```
 
 Total Count of Pull Requests by Project since 2018
-
 ```
   MATCH (n:PullRequest)-[r1]-(repo:Repository)-[r2]-(p:Project{Name:'Oystertoad'})
   WHERE n.CreatedTimestamp > 1514764800000
   RETURN count(n)
+```
+
+List of developers accociated with a pull request since 2018 (by project)
+```
+  MATCH (d:Person)-[r3]-(n:PullRequest)-[r1]-(repo:Repository)-[r2]-(p:Project{Name:'Oystertoad'})
+  WHERE n.CreatedTimestamp > 1514764800000
+  RETURN distinct d.Name
+```
+
+List of developers who created a pull request since 2018 (by project)
+```
+  MATCH (d:Person)-[r3:CREATED_BY]-(n:PullRequest)-[r1]-(repo:Repository)-[r2]-(p:Project{Name:'Oystertoad'})
+  WHERE n.CreatedTimestamp > 1514764800000
+  RETURN distinct d.Name
+```
+
+List of developers who created a pull request since 2018 (all projects)
+```
+  Match (dev:Developer)
+  Optional Match(dev)-[:CREATED_BY]-(pr:PullRequest)-[]-(r:Repository)-[]-(t:Project)
+  WHERE pr.CreatedTimestamp > 1514764800000
+  RETURN count(pr) as pullRequestsCreated, dev.Name, t.Name as ProjectName
+  order by dev.Name, pullRequestsCreated
+```
+
+List of developers who reviewed pull requests since 2018 (by project)
+```
+  MATCH (d:Person)-[r3:REVIEWED_BY]-(n:PullRequest)-[r1]-(repo:Repository)-[r2]-(p:Project{Name:'Oystertoad'})
+  WHERE n.CreatedTimestamp > 1514764800000
+  RETURN distinct d.Name
+```
+
+Count of Comments by User for the past 365 days
+
+```
+  WITH apoc.date.add(timestamp(),"ms", -365, 'd') as PastDate
+  Match (u:Person)
+  Optional Match (u)-[:AUTHOR]-(c:Comment)
+  WHERE c.PublishedTimestamp >= PastDate
+  RETURN count(c) as numberOfComments, u.Name as CodeReviewer
+  ORDER BY numberOfComments
+```
+
+Dump all comments made over the past year
+```
+  WITH apoc.date.add(timestamp(),"ms", -365, 'd') as PastDate
+  Match (u:Developer)
+  Optional Match (u)-[:AUTHOR]-(c:Comment)
+  WHERE c.PublishedTimestamp >= PastDate
+  RETURN u.Name as CodeReviewer, c.Id, c.Content, c.PublishedTimestamp as PTimestamp
 ```
