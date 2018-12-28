@@ -41,7 +41,6 @@ Note: 1514764800000 is Jan 1st 2018
 
 
 Total Count of Pull Requests Created this year
-
 ```
   MATCH (n:PullRequest)
   WHERE n.CreatedTimestamp > 1514764800000
@@ -49,9 +48,16 @@ Total Count of Pull Requests Created this year
 ```
 
 Total Count of Pull Requests by Project since 2018
-
 ```
   MATCH (n:PullRequest)-[r1]-(repo:Repository)-[r2]-(p:Project{Name:'Oystertoad'})
   WHERE n.CreatedTimestamp > 1514764800000
   RETURN count(n)
+```
+
+
+List of developers with a pull request since 2018 (by project)
+```
+  MATCH (d:Person)-[r3]-(n:PullRequest)-[r1]-(repo:Repository)-[r2]-(p:Project{Name:'Oystertoad'})
+  WHERE n.CreatedTimestamp > 1514764800000
+  RETURN distinct d.Name
 ```
