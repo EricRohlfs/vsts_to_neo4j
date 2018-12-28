@@ -36,6 +36,7 @@ pip install py2neo
 ## Few Queries
 
 Note: Must run the post processing commands first to create the CreatedTimestamp fields.
+1514764800000 is Jan 1st 2018
 
 ```
   MATCH (n:PullRequest)
