@@ -54,10 +54,23 @@ Total Count of Pull Requests by Project since 2018
   RETURN count(n)
 ```
 
-
-List of developers with a pull request since 2018 (by project)
+List of developers accociated with a pull request since 2018 (by project)
 ```
   MATCH (d:Person)-[r3]-(n:PullRequest)-[r1]-(repo:Repository)-[r2]-(p:Project{Name:'Oystertoad'})
+  WHERE n.CreatedTimestamp > 1514764800000
+  RETURN distinct d.Name
+```
+
+List of developers who created a pull request since 2018 (by project)
+```
+  MATCH (d:Person)-[r3:CREATED_BY]-(n:PullRequest)-[r1]-(repo:Repository)-[r2]-(p:Project{Name:'Oystertoad'})
+  WHERE n.CreatedTimestamp > 1514764800000
+  RETURN distinct d.Name
+```
+
+List of developers who reviewed pull requests since 2018 (by project)
+```
+  MATCH (d:Person)-[r3:REVIEWED_BY]-(n:PullRequest)-[r1]-(repo:Repository)-[r2]-(p:Project{Name:'Oystertoad'})
   WHERE n.CreatedTimestamp > 1514764800000
   RETURN distinct d.Name
 ```
