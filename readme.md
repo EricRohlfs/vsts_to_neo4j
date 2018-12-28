@@ -24,18 +24,22 @@ In the code folder, rename the default_cfg.txt file to default.cfg and change th
 pip install py2neo
 
 ## Run the Scripts
+```
+  python ProjectsTeamsUsers.py
+  python Repositories.py
+  python PullRequests.py
+  python Comments.py
+  python WorkItems.py
+  python WorkItemLinks.py
+  python PostProcessingCmds.py
+```
+## Few Queries
 
-python ProjectsTeamsUsers.py
+Note: Must run the post processing commands first to create the CreatedTimestamp fields.
 
-python Repositories.py
-
-python PullRequests.py
-
-python Comments.py
-
-python WorkItems.py
-
-python WorkItemLinks.py
-
-python PostProcessingCmds.py
+```
+  MATCH (n:PullRequest)
+  WHERE n.CreatedTimestamp > 1514764800000
+  RETURN count(n)
+```
 
