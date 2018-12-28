@@ -114,7 +114,6 @@ class WorkItemLinksWorker(object):
         Attaches some metadata to the link that helps describe the type of link
         some of the data is redundant, but could help troubleshoot orphaned records.
         """
-        props = PropertyDict()
         if raw_link["sourceProjectId"] is not None:
             link["sourceProjectId"] = raw_link["sourceProjectId"]
         if raw_link["targetProjectId"] is not None:
@@ -123,7 +122,7 @@ class WorkItemLinksWorker(object):
             link["changedDate"] = raw_link["changedDate"]
         if raw_link["linkType"] is not None:
             link["fullLinkType"] = raw_link["linkType"]
-        
+
     def build_relationship(self, graph, raw_link):
         """
         finds the source and target work items and links them together

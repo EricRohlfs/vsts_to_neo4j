@@ -15,17 +15,20 @@ class VstsInfo(object):
     """
 
     def __init__(self, personal_access_token, project_name, data_folder='../DevMrgDataCache', ignore_cache=False):
-        # todo: remove personal access token from the __init__ signature
+        '''todo: remove personal access token from the __init__ signature'''
         self.config = configparser.ConfigParser()
         self.config.read_file(open('default.cfg'))
 
-        #todo: get these items out of this class,
-        #      let each module build their own url with help from this class.
+        '''todo: get these items out of this class,
+              let each module build their own url with help from this class.'''
         self.project_name = project_name
         self._load_from_source = ignore_cache
 
     @property
     def crawl_throttle(self):
+        """
+        Throttles the requests so we don't swamp the VSTS Server.
+        """
         return float(self.config['DEFAULT']['crawl_throttle'])
 
     @property
@@ -129,7 +132,7 @@ class VstsInfo(object):
         request_info = {}
         request_info["instance"] = self.instance
         request_info["api_version"] = self.api_version
-        # TODO Try to work project_name out of this class
+        '''TODO Try to work project_name out of this class'''
         request_info["project_name"] = str(self.project_name)
         request_info["headers"] = self.get_request_headers()
         return request_info

@@ -118,7 +118,7 @@ class PullReqeustWorkItemsWorker(object):
         work_item.BugFoundInEnvironment = fields.get("Microsoft.VSTS.CMMI.FoundInEnvironment")
         work_item.BugReason = fields.get("System.Reason")
 
-        #todo add ability for custom fields from the cfg file.
+        '''todo add ability for custom fields from the cfg file.'''
         #risk
         #work_item.RiskProbability = fields.get("")
         #work_item.RiskExposure = fields.get("")

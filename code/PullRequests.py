@@ -2,7 +2,7 @@
 Copys VSTS PullRequests to Neo4J
 Todo: permanently cache the completed and abandoned pull requests
 Todo: have a flag to update non-completed. This can be helpful if recently crashed
-Todo: could have a flag to not use open pull requests are older than so may days  
+Todo: could have a flag to not use open pull requests are older than so may days
 '''
 from multiprocessing import Pool
 from VSTSInfo import VstsInfo
@@ -258,7 +258,7 @@ class PullRequestsWorker(object):
 if __name__ == '__main__':
     print("starting PullRequests")
     #set to false for easier debugging, but it is slower
-    RUN_MULTITHREADED = True
+    RUN_MULTITHREADED = False
 
     GRAPH = GraphBuilder()
     GRAPH.create_unique_constraints()

@@ -43,7 +43,7 @@ class RepositoriesWorker(object):
             proj.Url = raw_proj.get("url")
 
             repo_proj = Project.select(graph, proj.Id)
-            #todo: may not need to do this.
+            '''todo: may not need to do this.'''
             if repo_proj is not None:
                 proj_tx = graph.begin()
                 proj_tx.create(proj)

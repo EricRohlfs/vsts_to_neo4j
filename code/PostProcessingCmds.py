@@ -20,6 +20,9 @@ class PostProcessingCommands(object):
 
     @property
     def developer_names(self):
+        """
+        List of developers to add a label for in Neo4j
+        """
         devs = self.config['DEFAULT']['developer_names'].replace('"', '').replace("\r", '').replace("\n", '').split(",")
         return devs
 

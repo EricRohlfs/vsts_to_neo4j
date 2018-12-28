@@ -35,7 +35,7 @@ class CommentsWorker():
         '''
         returns the url
         '''
-        #todo:upgrade to modern string format
+        '''todo:upgrade to modern string format'''
         get_comments_url = ("%s/DefaultCollection/_apis/git/repositories/%s/pullRequests/%s/threads?api-version=%s")%(self._vsts.instance, repository_id, pull_request_id, self.vsts_api.api_version)
         print(get_comments_url)
         return get_comments_url
