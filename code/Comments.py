@@ -7,7 +7,7 @@ from multiprocessing import Pool
 from VSTSInfo import VstsInfo
 from models import GraphBuilder, PullRequest, Comment, PullRequestThread, Person
 
-class CommentsWorker(object):
+class CommentsWorker():
     '''
     Gets Comments from VSTS and saves them to Neo4J
     '''
@@ -150,8 +150,7 @@ class CommentsWorker(object):
         '''
         Make the call to VSTS and return a dictionary of data
         '''
-        #url = self.generatevsts_api_url(repository_id, pull_request_id)
-        data = self.vsts_api.get_data(url)
+        data = self.vsts_api.make_request(url)
         return data
 
 
@@ -161,9 +160,6 @@ class CommentsWorker(object):
         To filter out system comments use this method in your logic to prevent them from saving
         '''
         result = False
-        #key = "commentType"
-        #if key not in vsts_comment_data:
-        #    return result
         if vsts_comment_data.get("commentType") == "text":
             result = True
         return result
@@ -212,7 +208,6 @@ if __name__ == '__main__':
     print("starting Comments")
     print("Threads will not be saved if there are no user comments")
     #set to false for easier debugging, but it is slower
-    #multithreaded does not work in this case too many threads
     RUN_MULTI_THREADED = False
 
     #logging.basicConfig(filename='logs/comments_runner.log', level=logging.WARNING)

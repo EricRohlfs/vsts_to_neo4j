@@ -223,7 +223,7 @@ class PullReqeustWorkItemsWorker(object):
 if __name__ == '__main__':
     print("starting Work Items linked to Pull Requests")
     #set to false for easier debugging, but it is slower
-    RUN_MULTITHREADED = False
+    RUN_MULTITHREADED = True
 
     VSTS = VstsInfo(None, None, ignore_cache=False)
     WORKER = PullReqeustWorkItemsWorker(VSTS.get_request_settings(), VSTS)
