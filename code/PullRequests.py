@@ -1,9 +1,9 @@
-'''
+"""
 Copys VSTS PullRequests to Neo4J
 Todo: permanently cache the completed and abandoned pull requests
 Todo: have a flag to update non-completed. This can be helpful if recently crashed
 Todo: could have a flag to not use open pull requests are older than so may days
-'''
+"""
 from multiprocessing import Pool
 from VSTSInfo import VstsInfo
 from models import GraphBuilder, Repository, PullRequest, Person, WorkItem
@@ -224,16 +224,20 @@ class PullRequestsWorker(object):
             graph.create(pull)
         return pull
 
+
     def has_data_to_parse(self, raw_vsts_data):
         """
         In some cases a request does not have any data,
         Others we have reached the end of pagination
         """
-        has_data = False
-        if raw_vsts_data is not None:
-            if raw_vsts_data.get("count") > 0:
-                has_data = True
-        return has_data
+        #print(raw_vsts_data)
+        if raw_vsts_data:
+            if raw_vsts_data["value"] == []:
+                return False
+            #not empty
+            return True
+        else:
+            return False
 
     def map_and_save_pull_request(self, graph, raw_pull_req):
         """
@@ -258,7 +262,7 @@ class PullRequestsWorker(object):
 if __name__ == '__main__':
     print("starting PullRequests")
     #set to false for easier debugging, but it is slower
-    RUN_MULTITHREADED = False
+    RUN_MULTITHREADED = True
 
     GRAPH = GraphBuilder()
     GRAPH.create_unique_constraints()

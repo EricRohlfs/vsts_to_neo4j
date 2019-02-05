@@ -165,8 +165,12 @@ class VstsInfo(object):
         time.sleep(throttle)
         request = urllib.request.Request(url, headers=self.get_request_headers())
         opener = urllib.request.build_opener()
-        response = opener.open(request)
-        data = json.loads(response.read())
+        try:
+            response = opener.open(request)
+            data = json.loads(response.read())
+        except urllib.error.HTTPError as err:
+            if err.code == 404:
+                data = None
         return data
 
     def get_data_from_file(self, file_name):
