@@ -1,18 +1,29 @@
 """
 Syncs repos between two TFS/VSTS/AzureDevOps repos
 """
-
+import configparser
+import os
 from multiprocessing import Pool
 from ProjectsTeamsUsers import ProjectsTeamsUsersWorker
 from Repositories import RepositoriesWorker
 from VSTSInfo import VstsInfo
-import configparser
-import os
 
 class RepoSync(object):
     """
     RepoSync helps get a list of Repos to later sync
     """
+
+    def no_ip_remote_name(self):
+        """
+        returns the git remote name for the no ip server
+        """
+        return "no_ip_remote"
+
+    def ip_remote_name(self):
+        """
+        returns the git remote name for the server with a public ip address
+        """
+        return "ip_remote"
 
     def add_repo_urls_to_store(self, project_info, store):
         """
@@ -20,25 +31,25 @@ class RepoSync(object):
         """
         url = REPO_WORKER.build_url(project_info.get("id"))
         repo_data = VSTS.make_request(url)
-        for r in repo_data["value"]:
-            web_url = r.get("webUrl")
+        for repo in repo_data["value"]:
+            web_url = repo.get("webUrl")
             store.append(web_url)
 
     def save_repo_urls(self, urls, filename):
         """
         saves the urls to a file
         """
-        with open(filename, 'w') as f:
+        with open(filename, 'w') as file:
             for item in urls:
-                f.write("%s\n" % item)
+                file.write("%s\n" % item)
 
     def save_cmd_list(self, cmds, filename):
         """
         saves a list to a file
         """
-         with open(filename, 'w') as f:
+        with open(filename, 'w') as file:
             for item in cmds:
-                f.write("%s\n" % item)
+                file.write("%s\n" % item)
 
 
     def swap_fqdn(self, repo_list, old_fqdn, new_fqdn):
@@ -71,7 +82,7 @@ class RepoSync(object):
         The folder names should be the same as the repo names
         """
         #repos = [x[0] for x in os.walk(git_root)]
-        repos = os.listdir(git_root) 
+        repos = os.listdir(git_root)
         return repos
 
     def get_repo_name_from_url(self, url):
@@ -86,7 +97,7 @@ class RepoSync(object):
 
     def get_missing_local_repos(self, local_folders, repos):
         """
-        Compares the list of repo names to local folders and returns the difference 
+        Compares the list of repo names to local folders and returns the difference
         """
         repo_names = []
         for url in repos:
@@ -96,46 +107,56 @@ class RepoSync(object):
         missing = set(repo_names).difference(local_folders)
         return missing
 
-    def build_remote_cmd(self, repo_name, remote_name, remote_url ):
+    def build_remote_cmd(self, repo_name, remote_name, remote_url):
         """
+        creates a git set remote command for the repo from a parent folder suitable for a script
         """
-        cmd =  "git --work-tree={0} --git-dir={0}/.git  remote add {2} {1}".format(repo_name, remote_url, remote_name)
+        cmd = "git --work-tree={0} --git-dir={0}/.git  remote add {2} {1}".format(repo_name, remote_url, remote_name)
         return cmd
 
-    def generate_remotes(self, no_ip_store, no_ip_url, has_ip_url, cmd_list):
+    def generate_remotes(self, no_ip_store, no_ip_url, has_ip_url):
         """
-        git --work-tree=repo_name --git-dir=repo_name/.git  remote add noip https://noip.visualstudio.com
+        git --work-tree=repo_name --git-dir=repo_name/.git
+            remote add noip https://noip.visualstudio.com/foo/_git/repo_name
         """
-        no_ip_remote_name = "no_ip_remote"
-        ip_remote_name = "ip_remote"
-
+        results = []
         for url_noip in no_ip_store:
             repo_name = self.get_repo_name_from_url(url_noip)
-            no_ip_cmd = self.build_remote_cmd(repo_name, no_ip_remote_name, url_noip)
+            no_ip_cmd = self.build_remote_cmd(repo_name, self.no_ip_remote_name, url_noip)
             url_ip = url_noip.replace(no_ip_url, has_ip_url)
-            ip_cmd = self.build_remote_cmd(repo_name, ip_remote_name, url_ip)
-            cmd_list.append(no_ip_cmd)
-            cmd_list.append(ip_cmd)
-          
-            
+            ip_cmd = self.build_remote_cmd(repo_name, self.ip_remote_name, url_ip)
+            results.append(no_ip_cmd)
+            results.append(ip_cmd)
+        return results
 
+    def get_fetch_cmd(self, repo_name, remote_name):
+        """
+        fetches from the public ip address repo
+        git --work-tree=repo_name --git-dir=repo_name/.git
+            fetch  https://noip.visualstudio.com/foo/_git/repo_name
+        """
+        fetch = "git --work-tree={0} --git-dir={0}/.git fetch --tags --force {1}".format(repo_name, remote_name)
+        return fetch
 
-
-
-
+    def get_push_cmd(self, repo_name, remote_name):
+        """
+        creates a git push command suitable from running form a big batch file
+        """
+        pull = "git --work-tree={0} --git-dir={0}/.git push --all {1} ".format(repo_name, remote_name)
+        return pull
 
 if __name__ == '__main__':
     print("starting Repo Sync")
 
-    config = configparser.ConfigParser()
-    config.read_file(open('default.cfg'))
+    CONFIG = configparser.ConfigParser()
+    CONFIG.read_file(open('default.cfg'))
 
     #set to false for easier debugging, but it is slower
-    RUN_MULTITHREADED = config['RepoSync']['RunMultiThreaded']
+    RUN_MULTITHREADED = CONFIG['RepoSync']['RunMultiThreaded']
     RUN_MULTITHREADED = RUN_MULTITHREADED in ['True', '1', 't', 'y', 'yes', 'yeah', 'yup', 'certainly', 'uh-huh']
-    SERVER_NO_IP =  config['RepoSync']['ServerNoIp']
-    SERVER_IP = config['RepoSync']['ServerIp']
-    GIT_ROOT_FOLDER_PATH = config['RepoSync']['GitRootFolderPath']
+    SERVER_NO_IP = CONFIG['RepoSync']['ServerNoIp']
+    SERVER_IP = CONFIG['RepoSync']['ServerIp']
+    GIT_ROOT_FOLDER_PATH = CONFIG['RepoSync']['GitRootFolderPath']
 
     #for this script we always want to ignore the cache
     VSTS = VstsInfo(None, None, ignore_cache=False)
@@ -162,22 +183,22 @@ if __name__ == '__main__':
     #generate bat file to clome missing repos
     LOCAL_MISSING = REPO_SYNC.get_missing_local_repos(LOCAL_REPOS, REPO_NOIP_STORE)
     CLONE_MISSING = REPO_SYNC.make_clone_script(REPO_NOIP_STORE, LOCAL_MISSING, GIT_ROOT_FOLDER_PATH)
-    REPO_SYNC.save_repo_urls(CLONE_MISSING, GIT_ROOT_FOLDER_PATH + "\\git_clone_missing.bat")
+    REPO_SYNC.save_repo_urls(CLONE_MISSING,
+                             GIT_ROOT_FOLDER_PATH + "\\git_clone_missing.bat")
 
     #set both remotes
-    SET_REMOTES = []
-    REPO_SYNC.generate_remotes(REPO_NOIP_STORE, SERVER_NO_IP, SERVER_IP, SET_REMOTES)
-    REPO_SYNC.save_cmd_list(SET_REMOTES, GIT_ROOT_FOLDER_PATH + "\\git_set_remotes.bat")
+    SET_REMOTES = REPO_SYNC.generate_remotes(REPO_NOIP_STORE, SERVER_NO_IP, SERVER_IP)
+    REPO_SYNC.save_cmd_list(SET_REMOTES,
+                            GIT_ROOT_FOLDER_PATH + "\\git_set_remotes.bat")
 
-    #REPO_SYNC.save_repo_urls(REPO_NOIP_STORE, "git_web_urls_original.txt")
+    #fetch from SERVER_IP AND PUSH TO NO_IP, including tags
+    #may need tweaking if no_ip_server updates any code
+    FETCH_PUSH_CMDS = []
+    for REPO_URL in REPO_NOIP_STORE:
+        REPO_NAME = REPO_SYNC.get_repo_name_from_url(REPO_URL)
+        fetch_has_ip = REPO_SYNC.get_fetch_cmd(REPO_NAME, REPO_SYNC.ip_remote_name())
+        FETCH_PUSH_CMDS.append(fetch_has_ip)
+        push_no_ip = REPO_SYNC.get_push_cmd(REPO_NAME, REPO_SYNC.no_ip_remote_name())
+        FETCH_PUSH_CMDS.append(push_no_ip)
 
-    #REPO_IP_STORE = REPO_SYNC.swap_fqdn(REPO_NOIP_STORE, SERVER_NO_IP, SERVER_IP)
-    #REPO_SYNC.save_repo_urls(REPO_IP_STORE, "git_web_urls.txt")
-
-
-
-                
-            
-
-
-
+    REPO_SYNC.save_cmd_list(FETCH_PUSH_CMDS, GIT_ROOT_FOLDER_PATH + "\\git_fetch_push.bat")
