@@ -24,13 +24,22 @@ class RepoSync(object):
             web_url = r.get("webUrl")
             store.append(web_url)
 
-    def save_repo_urls(self, urls ,filename):
+    def save_repo_urls(self, urls, filename):
         """
         saves the urls to a file
         """
         with open(filename, 'w') as f:
             for item in urls:
                 f.write("%s\n" % item)
+
+    def save_cmd_list(self, cmds, filename):
+        """
+        saves a list to a file
+        """
+         with open(filename, 'w') as f:
+            for item in cmds:
+                f.write("%s\n" % item)
+
 
     def swap_fqdn(self, repo_list, old_fqdn, new_fqdn):
         """
@@ -87,7 +96,32 @@ class RepoSync(object):
         missing = set(repo_names).difference(local_folders)
         return missing
 
-    #def generate_remotes(self, )
+    def build_remote_cmd(self, repo_name, remote_name, remote_url ):
+        """
+        """
+        cmd =  "git --work-tree={0} --git-dir={0}/.git  remote add {2} {1}".format(repo_name, remote_url, remote_name)
+        return cmd
+
+    def generate_remotes(self, no_ip_store, no_ip_url, has_ip_url, cmd_list):
+        """
+        git --work-tree=repo_name --git-dir=repo_name/.git  remote add noip https://noip.visualstudio.com
+        """
+        no_ip_remote_name = "no_ip_remote"
+        ip_remote_name = "ip_remote"
+
+        for url_noip in no_ip_store:
+            repo_name = self.get_repo_name_from_url(url_noip)
+            no_ip_cmd = self.build_remote_cmd(repo_name, no_ip_remote_name, url_noip)
+            url_ip = url_noip.replace(no_ip_url, has_ip_url)
+            ip_cmd = self.build_remote_cmd(repo_name, ip_remote_name, url_ip)
+            cmd_list.append(no_ip_cmd)
+            cmd_list.append(ip_cmd)
+          
+            
+
+
+
+
 
 
 if __name__ == '__main__':
@@ -125,11 +159,15 @@ if __name__ == '__main__':
         for PROJ in PROJECTS:
             REPO_SYNC.add_repo_urls_to_store(PROJ, REPO_NOIP_STORE)
 
-
+    #generate bat file to clome missing repos
     LOCAL_MISSING = REPO_SYNC.get_missing_local_repos(LOCAL_REPOS, REPO_NOIP_STORE)
     CLONE_MISSING = REPO_SYNC.make_clone_script(REPO_NOIP_STORE, LOCAL_MISSING, GIT_ROOT_FOLDER_PATH)
     REPO_SYNC.save_repo_urls(CLONE_MISSING, GIT_ROOT_FOLDER_PATH + "\\git_clone_missing.bat")
 
+    #set both remotes
+    SET_REMOTES = []
+    REPO_SYNC.generate_remotes(REPO_NOIP_STORE, SERVER_NO_IP, SERVER_IP, SET_REMOTES)
+    REPO_SYNC.save_cmd_list(SET_REMOTES, GIT_ROOT_FOLDER_PATH + "\\git_set_remotes.bat")
 
     #REPO_SYNC.save_repo_urls(REPO_NOIP_STORE, "git_web_urls_original.txt")
 
