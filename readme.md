@@ -17,7 +17,7 @@ Install apoc into Neo4J. (Download and the apoc jar file in the plugins folder o
 
 ## Make default.cfg
 
-In the code folder, rename the default_cfg.txt file to default.cfg and change the values.
+In the code folder, rename the example_cfg.txt file to default.cfg and change the values.
 
 ## Pip
 
