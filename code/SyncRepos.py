@@ -159,7 +159,7 @@ if __name__ == '__main__':
     GIT_ROOT_FOLDER_PATH = CONFIG['RepoSync']['GitRootFolderPath']
 
     #for this script we always want to ignore the cache
-    VSTS = VstsInfo(None, None, ignore_cache=False)
+    VSTS = VstsInfo(None, None, ignore_cache=True)
 
     PTU_WORKER = ProjectsTeamsUsersWorker(VSTS.get_request_settings(), VSTS.project_whitelist, VSTS)
     PROJECTS_URL = PTU_WORKER.get_vsts_projects_url()
