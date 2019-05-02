@@ -21,11 +21,19 @@ class RepositoriesWorker(object):
         self.headers = vsts.get_request_headers()
         self.vsts = vsts
 
+    def build_url(self, project_name):
+        """
+        Returns the url fragment for the list of repositories
+        """
+        url = ("%s/DefaultCollection/%s/_apis/git/repositories?api-version=%s" % (self.instance, project_name, self.api_version))
+        return url
+
+
     def crawl(self, project_name):
         """
         Gets Repositories for a given project
         """
-        url = ("%s/DefaultCollection/%s/_apis/git/repositories?api-version=%s" % (self.instance, project_name, self.api_version))
+        url = self.build_url(project_name)
         data = self.vsts.make_request(url)
 
         for r in data["value"]:
