@@ -8,6 +8,7 @@ git_web_urls.txt
 git_clone_external.bat
 git_web_urls_original.txt
 *.bat
+git_clone_missing.bat
 
 #Visual Studio Code working files
 .vscode/

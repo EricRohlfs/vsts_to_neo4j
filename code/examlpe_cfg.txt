@@ -16,3 +16,11 @@ cache_file_prefix=lazy
 #postprocessingcmds.py
 developer_names="Sarah Connor","Kyle Reese"
 database_developers="Jack Sparrow","Will Turner"
+
+[RepoSync]
+#ServerNoIp does not have a public IP Address
+ServerNoIp = https://noip.visualstudio.com
+ServerIp = https://haspublicip.visualstudio.com
+
+RunMultiThreaded = False
+GitRootFolderPath = c:\GitSyncRoot\
