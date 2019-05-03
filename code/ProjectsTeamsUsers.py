@@ -7,7 +7,7 @@ Adds users and connects them to their teams.
 
 from multiprocessing import Pool
 from VSTSInfo import VstsInfo
-from models import GraphBuilder, Project, Team, Person
+#from models import GraphBuilder, Project, Team, Person
 
 class ProjectsTeamsUsersWorker(object):
     """
@@ -129,14 +129,14 @@ class ProjectsTeamsUsersWorker(object):
         if proj is not None:
             self.add_teams_to_repo(proj, graph)
         print("Finished Adding Projects Teams and Users")
-
+""" 
 if __name__ == '__main__':
     print("starting Projects Teams and Users")
     #set to false for easier debugging, but it is slower
     RUN_MULTITHREADED = True
 
-    GRAPH = GraphBuilder()
-    GRAPH.create_unique_constraints()
+    #GRAPH = GraphBuilder()
+    #GRAPH.create_unique_constraints()
 
     VSTS = VstsInfo(None, None, ignore_cache=True)
 
@@ -152,3 +152,4 @@ if __name__ == '__main__':
     else:
         for PROJ in PROJECTS:
             WORKER.crawl(PROJ)
+ """

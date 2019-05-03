@@ -8,7 +8,7 @@ later crawl and link up pull request info and comments.
 import configparser
 from multiprocessing import Pool
 from VSTSInfo import VstsInfo
-from models import GraphBuilder, Repository, Project
+#from models import GraphBuilder, Repository, Project
 
 class RepositoriesWorker(object):
     """
@@ -65,7 +65,7 @@ class RepositoriesWorker(object):
             transaction.graph.push(repo)
         print("Finished mapping repos")
 
-
+"""
 if __name__ == '__main__':
     print("starting Repositories Crawl")
     #set to false for easier debugging, but it is slower
@@ -85,3 +85,4 @@ if __name__ == '__main__':
     else:
         for proj in VSTS.project_whitelist:
             WORKER.crawl(proj)
+"""
