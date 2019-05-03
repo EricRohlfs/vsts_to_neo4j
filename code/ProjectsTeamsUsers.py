@@ -153,8 +153,4 @@ if __name__ == '__main__':
     else:
         for PROJ in PROJECTS:
             WORKER.crawl(PROJ)
-<<<<<<< HEAD
 """
-=======
- """
->>>>>>> 9afc4c883c64a7fb81fbc6d7aa1583fba9040e12
