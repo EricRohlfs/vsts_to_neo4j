@@ -136,8 +136,8 @@ if __name__ == '__main__':
     #set to false for easier debugging, but it is slower
     RUN_MULTITHREADED = True
 
-    GRAPH = GraphBuilder()
-    GRAPH.create_unique_constraints()
+    #GRAPH = GraphBuilder()
+    #GRAPH.create_unique_constraints()
 
     VSTS = VstsInfo(None, None, ignore_cache=True)
 
@@ -153,4 +153,8 @@ if __name__ == '__main__':
     else:
         for PROJ in PROJECTS:
             WORKER.crawl(PROJ)
+<<<<<<< HEAD
 """
+=======
+ """
+>>>>>>> 9afc4c883c64a7fb81fbc6d7aa1583fba9040e12

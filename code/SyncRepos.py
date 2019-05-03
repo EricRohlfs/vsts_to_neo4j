@@ -32,8 +32,10 @@ class RepoSync(object):
         url = REPO_WORKER.build_url(project_info.get("id"))
         repo_data = VSTS.make_request(url)
         for repo in repo_data["value"]:
-            web_url = repo.get("webUrl")
-            store.append(web_url)
+            repo_info = {}
+            repo_info["web_url"] = repo.get("webUrl")
+            repo_info["name"] = repo.get("name")
+            store.append(repo_info)
 
     def save_repo_urls(self, urls, filename):
         """
@@ -66,8 +68,9 @@ class RepoSync(object):
         Makes a clone script to run in a batch file
         """
         clone = []
-        for url in repo_list:
-            repo_name = self.get_repo_name_from_url(url)
+        for repo in repo_list:
+            repo_name = repo.get("name")
+            url = repo.get("web_url")
             for missed in missing:
                 if missed in url:
                     #where_to_clone = "{0}{1}\\".format(git_folder_root, repo_name)
@@ -100,9 +103,9 @@ class RepoSync(object):
         Compares the list of repo names to local folders and returns the difference
         """
         repo_names = []
-        for url in repos:
-            name = self.get_repo_name_from_url(url)
-            repo_names.append(name)
+        for repo in repos:
+            repo_name = repo.get("name")
+            repo_names.append(repo_name)
 
         missing = set(repo_names).difference(local_folders)
         return missing
@@ -159,7 +162,7 @@ if __name__ == '__main__':
     GIT_ROOT_FOLDER_PATH = CONFIG['RepoSync']['GitRootFolderPath']
 
     #for this script we always want to ignore the cache
-    VSTS = VstsInfo(None, None, ignore_cache=True)
+    VSTS = VstsInfo(None, None, ignore_cache=False)
 
     PTU_WORKER = ProjectsTeamsUsersWorker(VSTS.get_request_settings(), VSTS.project_whitelist, VSTS)
     PROJECTS_URL = PTU_WORKER.get_vsts_projects_url()
@@ -180,9 +183,11 @@ if __name__ == '__main__':
         for PROJ in PROJECTS:
             REPO_SYNC.add_repo_urls_to_store(PROJ, REPO_NOIP_STORE)
 
+    
     #generate bat file to clome missing repos
     LOCAL_MISSING = REPO_SYNC.get_missing_local_repos(LOCAL_REPOS, REPO_NOIP_STORE)
-    CLONE_MISSING = REPO_SYNC.make_clone_script(REPO_NOIP_STORE, LOCAL_MISSING, GIT_ROOT_FOLDER_PATH)
+    CLONE_MISSING = REPO_SYNC.make_clone_script(REPO_NOIP_STORE,
+                                                LOCAL_MISSING, GIT_ROOT_FOLDER_PATH)
     REPO_SYNC.save_repo_urls(CLONE_MISSING,
                              GIT_ROOT_FOLDER_PATH + "\\git_clone_missing.bat")
 

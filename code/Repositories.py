@@ -10,6 +10,7 @@ from multiprocessing import Pool
 from VSTSInfo import VstsInfo
 # from models import GraphBuilder, Repository, Project
 
+
 class RepositoriesWorker(object):
     """
     Gets the repository info from VSTS
@@ -64,7 +65,6 @@ class RepositoriesWorker(object):
             transaction.merge(repo)
             transaction.graph.push(repo)
         print("Finished mapping repos")
-
 
 """
 if __name__ == '__main__':
