@@ -79,7 +79,7 @@ class VstsInfo(object):
         basically the base url for VSTS
         :returns: url string
         """
-        return "https://" + self.instance_base
+        return "http://" + self.instance_base
 
     @property
     def headers(self):

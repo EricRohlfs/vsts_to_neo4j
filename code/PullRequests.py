@@ -6,7 +6,7 @@ Todo: could have a flag to not use open pull requests are older than so may days
 """
 from multiprocessing import Pool
 from VSTSInfo import VstsInfo
-from models import GraphBuilder, Repository, PullRequest, Person, WorkItem
+# from models import GraphBuilder, Repository, PullRequest, Person, WorkItem
 
 class PullRequestsWorker(object):
     '''
@@ -259,6 +259,7 @@ class PullRequestsWorker(object):
         graph.push(pull)
         print("saved pull request " + str(pull.Id))
 
+"""
 if __name__ == '__main__':
     print("starting PullRequests")
     #set to false for easier debugging, but it is slower
@@ -276,3 +277,4 @@ if __name__ == '__main__':
             p.map(WORKER.crawl, VSTS.project_whitelist)
     else:
         WORKER.crawl_projects(VSTS.project_whitelist)
+"""
