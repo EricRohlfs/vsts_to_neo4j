@@ -33,8 +33,9 @@ class RepoSync(object):
         repo_data = VSTS.make_request(url)
         for repo in repo_data["value"]:
             repo_info = {}
-            repo_info["web_url"] = repo.get("webUrl")
+            repo_info["web_url"] = repo.get("url")
             repo_info["name"] = repo.get("name")
+            repo_info["id"] = repo.get("id")
             store.append(repo_info)
 
     def save_repo_urls(self, urls, filename):
@@ -71,8 +72,14 @@ class RepoSync(object):
         for repo in repo_list:
             repo_name = repo.get("name")
             url = repo.get("web_url")
+            id = repo.get("id")
+            print("web url" + url)
             for missed in missing:
-                if missed in url:
+                missed_id = ""
+                for item in repo_list:
+                    if item["name"] == missed:
+                        missed_id = item["id"]
+                if missed_id in url:
                     #where_to_clone = "{0}{1}\\".format(git_folder_root, repo_name)
                     where_to_clone = os.path.join(git_folder_root, repo_name)
                     cmd = 'git clone {0} \"{1}\"'.format(url, where_to_clone)
@@ -162,7 +169,7 @@ if __name__ == '__main__':
     GIT_ROOT_FOLDER_PATH = CONFIG['RepoSync']['GitRootFolderPath']
 
     #for this script we always want to ignore the cache
-    VSTS = VstsInfo(None, None, ignore_cache=False)
+    VSTS = VstsInfo(None, None, ignore_cache=True)
 
     PTU_WORKER = ProjectsTeamsUsersWorker(VSTS.get_request_settings(), VSTS.project_whitelist, VSTS)
     PROJECTS_URL = PTU_WORKER.get_vsts_projects_url()
@@ -186,8 +193,11 @@ if __name__ == '__main__':
     
     #generate bat file to clome missing repos
     LOCAL_MISSING = REPO_SYNC.get_missing_local_repos(LOCAL_REPOS, REPO_NOIP_STORE)
+
     CLONE_MISSING = REPO_SYNC.make_clone_script(REPO_NOIP_STORE,
                                                 LOCAL_MISSING, GIT_ROOT_FOLDER_PATH)
+    for c in LOCAL_MISSING:
+        print(c)
     REPO_SYNC.save_repo_urls(CLONE_MISSING,
                              GIT_ROOT_FOLDER_PATH + "\\git_clone_missing.bat")
 
